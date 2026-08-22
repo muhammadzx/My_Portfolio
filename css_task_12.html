@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhammad Alshwabkeh | AI & Software Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode Palette */
+            --bg-main: #f8fafc;
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --nav-text: #0f172a;
+            --accent-color: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.2);
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --hero-gradient: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        body:has(#show_mode:checked) {
+            /* Dark Mode Palette (AI Cyberpunk/Dark Theme) */
+            --bg-main: #030712;
+            --nav-bg: rgba(3, 7, 18, 0.85);
+            --nav-text: #f8fafc;
+            --accent-color: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+            --card-bg: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --hero-gradient: linear-gradient(135deg, #38bdf8 0%, #2dd4bf 100%);
+            --shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Language Toggle Logic */
+        body:has(#lang_switch:checked) {
+            direction: rtl;
+        }
+
+        /* Text toggling based on language */
+        .ar-text { display: none; }
+        .en-text { display: inline; }
+        .en-block { display: block; }
+        .ar-block { display: none; }
+        .en-flex { display: flex; }
+        .ar-flex { display: none; }
+        .en-placeholder::placeholder { content: attr(data-placeholder); }
+
+        body:has(#lang_switch:checked) .ar-text { display: inline; }
+        body:has(#lang_switch:checked) .en-text { display: none; }
+        body:has(#lang_switch:checked) .en-block { display: none; }
+        body:has(#lang_switch:checked) .ar-block { display: block; }
+        body:has(#lang_switch:checked) .en-flex { display: none; }
+        body:has(#lang_switch:checked) .ar-flex { display: flex; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-decoration: none;
+            font-family: 'Cairo', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        section {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 80px 20px;
+        }
+
+        /* --- Navbar --- */
+        .nav {
+            direction: ltr;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            transition: 0.3s;
+        }
+
+        .check_mode, .dark_mode, .menu, .menu_ptn, .lang_checkbox {
+            display: none;
+        }
+
+        .white_mode {
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .white_mode:hover, .dark_mode:hover {
+            transform: scale(1.15);
+        }
+
+        .nav h1 {
+            font-size: 1.3rem;
+            color: var(--nav-text);
+            font-weight: 700;
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px var(--accent-glow));
+        }
+
+        .nav_links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            flex-direction: row-reverse;
+        }
+
+        .tabs li a {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .tabs li a:hover, .tabs li a.active {
+            color: var(--accent-color);
+            background-color: var(--accent-glow);
+        }
+
+        body:has(#show_mode:checked) .white_mode { display: none; }
+        body:has(#show_mode:checked) .dark_mode { display: inline-block; cursor: pointer; }
+
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%), var(--bg-main);
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--bg-main));
+            pointer-events: none;
+        }
+
+        .hero_cont {
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 900;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .hero h1 span {
+            background: var(--hero-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            border-radius: 50px;
+            background: var(--hero-gradient);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px var(--accent-glow); 
+        }
+
+        .hero button a {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .hero button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 25px var(--accent-glow);
+        }
+
+        /* --- About Section --- */
+        .about {
+            gap: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about .my_img {
+            border: 3px solid var(--accent-color);
+            border-radius: 30px;
+            overflow: hidden;
+            height: 380px;
+            width: 320px;
+            flex-shrink: 0;
+            box-shadow: 0 20px 40px var(--accent-glow);
+            transition: transform 0.5s ease;
+        }
+
+        .about .my_img:hover {
+            transform: translateY(-5px);
+        }
+
+        .about img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%);
+            transition: 0.5s;
+        }
+
+        .about img:hover {
+            filter: grayscale(0);
+            transform: scale(1.05);
+        }
+
+        .about_cont {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            max-width: 750px;
+        }
+
+        .about_cont h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .about_cont p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 2;
+        }
+
+        /* --- Projects Section --- */
+        .projects {
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .projects_cont {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .boxs {
+            width: 300px;
+            height: 320px;
+            position: relative;
+            perspective: 1000px;
+            cursor: pointer;
+
+        }
+
+        .my_projects {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+
+        .front {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        .back {
+            background: var(--hero-gradient);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .boxs:hover .front {
+            transform: rotateY(-180deg);
+        }
+
+        .boxs:hover .back {
+            transform: rotateY(0deg);
+        }
+
+        /* --- Contact Section --- */
+        .countact_cont {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 45px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .countact_cont h1 {
+            color: var(--text-main);
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .field input, .message textarea {
+            width: 100%;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .field input:focus, .message textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .message textarea {
+            height: 140px;
+            resize: none;
+        }
+
+        .submit {
+            padding: 15px;
+            background: var(--hero-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px var(--accent-glow);
+        }
+
+        .submit:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            padding: 25px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        /* --- Language Toggle Button Styles --- */
+        .lang_btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .lang_btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background-color: var(--accent-glow);
+        }
+        .lang_btn .ar-text { display: none; }
+        .lang_btn .en-text { display: inline; }
+        body:has(#lang_switch:checked) .lang_btn .ar-text { display: inline; }
+        body:has(#lang_switch:checked) .lang_btn .en-text { display: none; }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .about {
+                flex-direction: column;
+                text-align: center;
+            }
+            .about_cont {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--nav-bg);
+                padding: 25px;
+                text-align: center;
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+            }
+
+            .menu_ptn {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                cursor: pointer;
+                width: 30px;
+            }
+
+            .menu_ptn p {
+                width: 100%;
+                height: 3px;
+                background-color: var(--text-main);
+                border-radius: 2px;
+                transition: 0.3s;
+            }
+
+            body:has(#menu:checked) .tabs {
+                display: flex;
+            }
+
+            .nav h1 {
+                display: none;
+            }
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(80px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .about_cont, .boxs, .countact_cont, .my_img, .projects {
+            animation: fadeInUp linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 30%; 
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Navbar -->
+        <nav class="nav">
+            <img class="logo" src="icons8-html-5-48.png" alt="logo">
+
+            <div><input type="checkbox" id="lang_switch" class="lang_checkbox">
+                <label for="lang_switch" class="lang_btn">
+                    <span class="en-text">AR</span>
+                    <span class="ar-text">EN</span>
+                </label></div>
+
+            <div style="display: flex; align-items: center; gap: 15px;">
+                
+
+                <div class="show_mode">
+                    <input type="checkbox" id="show_mode" class="check_mode">
+                    <label for="show_mode">
+                        <img class="white_mode" src="day-mode.png" alt="Light Mode" style="width: 28px; height: 28px;">
+                        <img class="dark_mode" src="night-mode.png" alt="Dark Mode" style="width: 26px; height: 26px;">
+                    </label>
+                </div>
+            </div>
+
+            <h1>Muhammad Alshwabkeh</h1>
+
+            <div class="nav_links">
+                <input type="checkbox" id="menu" class="menu">
+                <div class="menu_ptn">
+                    <label for="menu" style="display:flex; flex-direction:column; gap:6px; cursor:pointer; width:100%;">
+                        <p></p><p></p><p></p>
+                    </label>
+                </div>
+                <ul class="tabs">
+                    <li><a href="#hero"><span class="en-text">Home</span><span class="ar-text">الرئيسية</span></a></li>
+                    <li><a href="#about"><span class="en-text">About Me</span><span class="ar-text">من نحن</span></a></li>
+                    <li><a href="#projects"><span class="en-text">Projects</span><span class="ar-text">المشاريع</span></a></li>
+                    <li><a href="#countact"><span class="en-text">Contact</span><span class="ar-text">اتصل بنا</span></a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="hero_cont">
+                <h1>
+                    <span class="en-block">Welcome, I'm <span>Muhammad Alshwabkeh</span><br>Software Developer & AI Researcher</span>
+                    <span class="ar-block">أهلاً بك، أنا <span>محمد الشوابكة</span><br>مطور برمجيات وباحث في الذكاء الاصطناعي</span>
+                </h1>
+                <button><a href="#projects"><span class="en-text">Explore My Work</span><span class="ar-text">استكشف أعمالي</span></a></button>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="my_img">
+                <img src="MY_photo.jpg" alt="Muhammad Alshwabkeh">
+            </div>
+            <div class="about_cont">
+                <h1><span class="en-text">About Me</span><span class="ar-text">نبذة عني</span></h1>
+                <p>
+                    <span class="en-text">A recent graduate from the University of Jordan majoring in Artificial Intelligence. I have a great passion for programming, software development, and artificial intelligence, with knowledge and experience in programming languages such as Python, Java, and C++, alongside machine learning libraries like TensorFlow and Scikit-learn.</span>
+                    <span class="ar-text">خريج حديث من الجامعة الأردنية تخصص الذكاء الاصطناعي. لدي شغف كبير بالبرمجة وتطوير البرمجيات والذكاء الاصطناعي، مع معرفة وخبرة في لغات البرمجة مثل بايثون، جافا، وC++، إلى جانب مكتبات التعلم الآلي مثل TensorFlow وScikit-learn.</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="projects" id="projects">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 2.2rem; color: var(--text-main);">
+                    <span class="en-text">Featured <span>Projects</span></span>
+                    <span class="ar-text">المشاريع <span>المميزة</span></span>
+                </h2>
+            </div>
+            <div class="projects_cont">
+                <div class="boxs">
+                    <div class="my_projects front"><span class="en-text">AI Project</span><span class="ar-text">مشروع ذكاء اصطناعي</span></div>
+                    <div class="my_projects back"><span class="en-text">AI Project Details</span><span class="ar-text">تفاصيل مشروع الذكاء الاصطناعي</span></div>
+                </div>
+
+                <div class="boxs">
+                    <div class="my_projects front"><span class="en-text">Software Dev</span><span class="ar-text">تطوير برمجيات</span></div>
+                    <div class="my_projects back"><span class="en-text">Software System Details</span><span class="ar-text">تفاصيل نظام البرمجيات</span></div>
+                </div>
+
+                <div class="boxs">
+                    <div class="my_projects front"><span class="en-text">Data Analysis</span><span class="ar-text">تحليل البيانات</span></div>
+                    <div class="my_projects back"><span class="en-text">Data Analysis Details</span><span class="ar-text">تفاصيل تحليل البيانات</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="countact" id="countact">
+            <div class="countact_cont">
+                <h1><span class="en-text">Get In Touch</span><span class="ar-text">تواصل معي</span></h1>
+                <div class="field">
+                    <input type="text" placeholder="Your Full Name" onfocus="this.placeholder=''" onblur="this.placeholder=document.getElementById('lang_switch').checked ? 'اسمك الكامل' : 'Your Full Name'">
+                </div>
+                <div class="field">
+                    <input type="email" placeholder="Email Address" onfocus="this.placeholder=''" onblur="this.placeholder=document.getElementById('lang_switch').checked ? 'البريد الإلكتروني' : 'Email Address'">
+                </div>
+                <div class="field message">
+                    <textarea placeholder="Write your message here..." onfocus="this.placeholder=''" onblur="this.placeholder=document.getElementById('lang_switch').checked ? 'اكتب رسالتك هنا...' : 'Write your message here...'"></textarea>
+                </div>
+                <button class="submit" type="submit"><span class="en-text">Send Message</span><span class="ar-text">إرسال الرسالة</span></button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                <span class="en-text">All Rights Reserved &copy; 2026 - Muhammad Alshwabkeh</span>
+                <span class="ar-text">جميع الحقوق محفوظة &copy; 2026 - محمد الشوابكة</span>
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
